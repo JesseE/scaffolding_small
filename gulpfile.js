@@ -32,30 +32,20 @@ gulp.task('build:compress', compressTask);
 gulp.task('serve', serveTask);
 gulp.task('watch', watchTask);
 
-//changed component
 //browserify watchify
 //sourcemaps still needed
 
 function buildHtml() {
     nunjucksRender.nunjucks.configure([paths.src], { watch: false });
     return gulp.src([paths.srcViews + '**/*.html', '!' + paths.src + '**/_*.html'])
+        .pipe(changed('index', {extension: 'html'}))
         .pipe(nunjucksRender())
         .pipe(gulp.dest(paths.dist));
 }
 
-function buildAssets() {
-    return mergeStream(
-        gulp.src([
-
-        ])
-            .pipe(gulp.dest(paths.distAssets + 'fonts/')),
-        gulp.src([paths.srcAssets + 'images/**'], { base: paths.srcAssets })
-            .pipe(gulp.dest(paths.distAssets))
-    );
-}
-
 function buildCss() {
     return gulp.src(paths.src + 'main.less')
+        .pipe(changed('main', {extension: 'less'}))
         .pipe(less())
         .pipe(minifyCss())
         .pipe(rename('main.min.css'))
@@ -64,11 +54,32 @@ function buildCss() {
 
 function buildJs() {
     return gulp.src([paths.srcViews + '**/*.js'])
-        .pipe(debug())
+        .pipe(changed('main', {extension: 'js'}))
         .pipe(uglify())
-        .pipe(concat('index.js'))
+        .pipe(concat('main.js'))
         .pipe(gulp.dest(paths.srcAssets))
         .pipe(gulp.dest(paths.distAssets));
+}
+
+function buildAssets() {
+    return mergeStream(gulp.src([])
+        .pipe(gulp.dest(paths.distAssets + 'fonts/')),
+            gulp.src([paths.srcAssets + 'images/**'], { base: paths.srcAssets })
+        .pipe(gulp.dest(paths.distAssets))
+    );
+}
+
+function compressTask(){
+    return gulp.src(paths.dist + '**/*')
+        .pipe(debug())
+        .pipe(zip('dist.zip'))
+        .pipe(gulp.dest(paths.build));
+}
+
+function watchTask() {
+    gulp.watch([paths.src + '*.html'], ['build:html']);
+    gulp.watch([paths.srcViews + '**/*.js'], ['build:js']);
+    gulp.watch([paths.srcViews + '**/*.less'], ['build:css']);
 }
 
 function serveTask() {
@@ -82,15 +93,3 @@ function serveTask() {
     });
 }
 
-function watchTask() {
-    gulp.watch([paths.src + '*.html'], ['build:html']);
-    gulp.watch([paths.srcViews + '**/*.js'], ['build:js']);
-    gulp.watch([paths.srcViews + '**/*.less'], ['build:css']);
-}
-
-function compressTask(){
-    return gulp.src(paths.dist + '**/*')
-        .pipe(debug())
-        .pipe(zip('dist.zip'))
-        .pipe(gulp.dest(paths.build));
-}
