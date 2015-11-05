@@ -11,6 +11,7 @@ var debug = require('gulp-debug');
 var uglify = require('gulp-uglify');
 var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
+var sourcemaps = require('gulp-sourcemaps');
 
 var paths = {
     dist: 'dist/',
@@ -46,17 +47,21 @@ function buildHtml() {
 function buildCss() {
     return gulp.src(paths.src + 'main.less')
         .pipe(changed('main', {extension: 'less'}))
+        .pipe(sourcemaps.init())
         .pipe(less())
         .pipe(minifyCss())
         .pipe(rename('main.min.css'))
+        .pipe(sourcemaps.write())
         .pipe(gulp.dest(paths.distAssets));
 }
 
 function buildJs() {
     return gulp.src([paths.srcViews + '**/*.js'])
         .pipe(changed('main', {extension: 'js'}))
+        .pipe(sourcemaps.init())
         .pipe(uglify())
         .pipe(concat('main.js'))
+        .pipe(sourcemaps.write())
         .pipe(gulp.dest(paths.srcAssets))
         .pipe(gulp.dest(paths.distAssets));
 }
