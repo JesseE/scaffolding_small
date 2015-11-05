@@ -12,6 +12,11 @@ var uglify = require('gulp-uglify');
 var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
 var sourcemaps = require('gulp-sourcemaps');
+var changed = require('gulp-changed');
+var browserify = require('browserify');
+var watchify = require('watchify');
+var autoprefix = require('gulp-autoprefixer');
+var b = browserify();
 
 var paths = {
     dist: 'dist/',
@@ -34,12 +39,10 @@ gulp.task('serve', serveTask);
 gulp.task('watch', watchTask);
 
 //browserify watchify
-//sourcemaps still needed
 
 function buildHtml() {
     nunjucksRender.nunjucks.configure([paths.src], { watch: false });
-    return gulp.src([paths.srcViews + '**/*.html', '!' + paths.src + '**/_*.html'])
-        .pipe(changed('index', {extension: 'html'}))
+    return gulp.src([paths.src + '**/*.html', '!' + paths.src + '**/_*.html'])
         .pipe(nunjucksRender())
         .pipe(gulp.dest(paths.dist));
 }
@@ -47,21 +50,22 @@ function buildHtml() {
 function buildCss() {
     return gulp.src(paths.src + 'main.less')
         .pipe(changed('main', {extension: 'less'}))
-        .pipe(sourcemaps.init())
+        .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(less())
+        .pipe(autoprefix())
         .pipe(minifyCss())
         .pipe(rename('main.min.css'))
-        .pipe(sourcemaps.write())
+        .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(paths.distAssets));
 }
 
 function buildJs() {
     return gulp.src([paths.srcViews + '**/*.js'])
         .pipe(changed('main', {extension: 'js'}))
-        .pipe(sourcemaps.init())
+        .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(uglify())
-        .pipe(concat('main.js'))
-        .pipe(sourcemaps.write())
+        .pipe(concat('main.min.js'))
+        .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(paths.srcAssets))
         .pipe(gulp.dest(paths.distAssets));
 }

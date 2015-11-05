@@ -1,0 +1,1 @@
+{"version":3,"sources":["views/header/header.less"],"names":[],"mappings":"AAAA,QACE,MAAA","file":"main.min.css","sourcesContent":[".header{\n  color : crimson;\n}\n"],"sourceRoot":"/source/"}
