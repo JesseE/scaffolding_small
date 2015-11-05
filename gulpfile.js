@@ -6,12 +6,17 @@ var mergeStream = require('merge-stream');
 var nunjucksRender = require('gulp-nunjucks-render');
 var rimraf = require('rimraf');
 var runSequence = require('run-sequence');
-var gzip = require('gulp-gzip');
+var zip = require('gulp-zip');
+var debug = require('gulp-debug');
+var uglify = require('gulp-uglify');
+var minifyCss = require('gulp-minify-css');
+var rename = require('gulp-rename');
 
 var paths = {
     dist: 'dist/',
     distAssets: 'dist/assets/',
     src: 'src/',
+    srcViews:'src/views/',
     srcAssets: 'src/assets/',
     build:'build/'
 };
@@ -23,13 +28,17 @@ gulp.task('build:assets', buildAssets);
 gulp.task('build:html', buildHtml);
 gulp.task('build:css', buildCss);
 gulp.task('build:js', buildJs);
-gulp.task('build:compress', compress);
-gulp.task('serve', serve);
+gulp.task('build:compress', compressTask);
+gulp.task('serve', serveTask);
 gulp.task('watch', watchTask);
+
+//changed component
+//browserify watchify
+//sourcemaps still needed
 
 function buildHtml() {
     nunjucksRender.nunjucks.configure([paths.src], { watch: false });
-    return gulp.src([paths.src + '**/*.html', '!' + paths.src + '**/_*.html'])
+    return gulp.src([paths.srcViews + '**/*.html', '!' + paths.src + '**/_*.html'])
         .pipe(nunjucksRender())
         .pipe(gulp.dest(paths.dist));
 }
@@ -37,8 +46,7 @@ function buildHtml() {
 function buildAssets() {
     return mergeStream(
         gulp.src([
-            'node_modules/bootstrap/fonts/**',
-            'src/assets/fonts/**'
+
         ])
             .pipe(gulp.dest(paths.distAssets + 'fonts/')),
         gulp.src([paths.srcAssets + 'images/**'], { base: paths.srcAssets })
@@ -47,20 +55,23 @@ function buildAssets() {
 }
 
 function buildCss() {
-    return gulp.src(paths.srcAssets + 'index.less')
+    return gulp.src(paths.src + 'main.less')
         .pipe(less())
+        .pipe(minifyCss())
+        .pipe(rename('main.min.css'))
         .pipe(gulp.dest(paths.distAssets));
 }
 
 function buildJs() {
-    return gulp.src([
-        paths.srcAssets + 'scripts/*.js'
-    ])
+    return gulp.src([paths.srcViews + '**/*.js'])
+        .pipe(debug())
+        .pipe(uglify())
         .pipe(concat('index.js'))
+        .pipe(gulp.dest(paths.srcAssets))
         .pipe(gulp.dest(paths.distAssets));
 }
 
-function serve() {
+function serveTask() {
     browserSync.init({
         files: [paths.dist + '**/*'],
         online: false,
@@ -72,12 +83,14 @@ function serve() {
 }
 
 function watchTask() {
-    gulp.watch([paths.src + '**/*.html'], ['build:html']);
-    gulp.watch([paths.src + '**/*.js'], ['build:js']);
-    gulp.watch([paths.src + '**/*.less'], ['build:css']);
+    gulp.watch([paths.src + '*.html'], ['build:html']);
+    gulp.watch([paths.srcViews + '**/*.js'], ['build:js']);
+    gulp.watch([paths.srcViews + '**/*.less'], ['build:css']);
 }
-function compress(){
-    return gulp.src(paths.dist)
-        .pipe(gzip())
+
+function compressTask(){
+    return gulp.src(paths.dist + '**/*')
+        .pipe(debug())
+        .pipe(zip('dist.zip'))
         .pipe(gulp.dest(paths.build));
 }

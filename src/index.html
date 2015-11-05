@@ -1,10 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <title></title>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title> </title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- to disable phone number detection automatic styling by safari on mobile devices -->
+    <meta name="format-detection" content="telephone=no">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    {% block styles %}
+    <link rel="stylesheet" href="assets/main.min.css">
+    {% endblock %}
 </head>
 <body>
-
+    {% include "views/header/_header.html" %}
+    <main class="main">
+        {% include "views/author/_author.html" %}
+        {% include "views/blog/_blog.html" %}
+        {% include "views/carousel/_carousel.html" %}
+    </main>
+    {% include "views/footer/_footer.html" %}
+    <script src="assets/index.js"></script>
 </body>
 </html>
