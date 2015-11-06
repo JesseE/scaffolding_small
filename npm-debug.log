@@ -1,0 +1,42 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'run', 'watch' ]
+2 info using npm@3.3.6
+3 info using node@v5.0.0
+4 verbose run-script [ 'prewatch', 'watch', 'postwatch' ]
+5 info lifecycle scaffolding-small@1.0.0~prewatch: scaffolding-small@1.0.0
+6 silly lifecycle scaffolding-small@1.0.0~prewatch: no script for prewatch, continuing
+7 info lifecycle scaffolding-small@1.0.0~watch: scaffolding-small@1.0.0
+8 verbose lifecycle scaffolding-small@1.0.0~watch: unsafe-perm in lifecycle true
+9 verbose lifecycle scaffolding-small@1.0.0~watch: PATH: /usr/local/lib/node_modules/npm/bin/node-gyp-bin:/Users/jesseeikema/WebstormProjects/scaffolding/node_modules/.bin:/Users/jesseeikema/.rvm/gems/ruby-2.2.1/bin:/Users/jesseeikema/.rvm/gems/ruby-2.2.1@global/bin:/Users/jesseeikema/.rvm/rubies/ruby-2.2.1/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/Users/jesseeikema/.rvm/bin
+10 verbose lifecycle scaffolding-small@1.0.0~watch: CWD: /Users/jesseeikema/WebstormProjects/scaffolding
+11 silly lifecycle scaffolding-small@1.0.0~watch: Args: [ '-c', 'parallelshell \'gulp build\' \'gulp watch\'' ]
+12 silly lifecycle scaffolding-small@1.0.0~watch: Returned: code: 1  signal: null
+13 info lifecycle scaffolding-small@1.0.0~watch: Failed to exec watch script
+14 verbose stack Error: scaffolding-small@1.0.0 watch: `parallelshell 'gulp build' 'gulp watch'`
+14 verbose stack Exit status 1
+14 verbose stack     at EventEmitter.<anonymous> (/usr/local/lib/node_modules/npm/lib/utils/lifecycle.js:233:16)
+14 verbose stack     at emitTwo (events.js:87:13)
+14 verbose stack     at EventEmitter.emit (events.js:172:7)
+14 verbose stack     at ChildProcess.<anonymous> (/usr/local/lib/node_modules/npm/lib/utils/spawn.js:24:14)
+14 verbose stack     at emitTwo (events.js:87:13)
+14 verbose stack     at ChildProcess.emit (events.js:172:7)
+14 verbose stack     at maybeClose (internal/child_process.js:818:16)
+14 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:211:5)
+15 verbose pkgid scaffolding-small@1.0.0
+16 verbose cwd /Users/jesseeikema/WebstormProjects/scaffolding
+17 error Darwin 15.0.0
+18 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "run" "watch"
+19 error node v5.0.0
+20 error npm  v3.3.6
+21 error code ELIFECYCLE
+22 error scaffolding-small@1.0.0 watch: `parallelshell 'gulp build' 'gulp watch'`
+22 error Exit status 1
+23 error Failed at the scaffolding-small@1.0.0 watch script 'parallelshell 'gulp build' 'gulp watch''.
+23 error This is most likely a problem with the scaffolding-small package,
+23 error not with npm itself.
+23 error Tell the author that this fails on your system:
+23 error     parallelshell 'gulp build' 'gulp watch'
+23 error You can get their info via:
+23 error     npm owner ls scaffolding-small
+23 error There is likely additional logging output above.
+24 verbose exit [ 1, true ]
