@@ -20,7 +20,6 @@ var buffer = require('vinyl-buffer');
 var source = require('vinyl-source-stream');
 var gutil = require('gulp-util');
 var assign = require('lodash.assign');
-var gulpif = require('gulp-if');
 var b = browserify();
 
 var paths = {
