@@ -1,6 +1,23 @@
-.idea
+# project output
+dist
+dist 2
+*.zip
 
-npm-debug.log*
+# system files
+*~
+.DS_Store
+
+# node files
+npm-debug.log
 node_modules
-*.sublime-project
+
+# common IDE files
+*.iml
+*.ipr
+*.iws
+.idea
+.project
 *.sublime-workspace
+nb-configuration.xml
+nbactions.xml
+nbproject/private

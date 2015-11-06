@@ -1,9 +1,6 @@
-var header = 2;/**
- * Created by jesseeikema on 11/5/15.
- */
-var footer = 1;
+require('../views/author/author');
 var header = 2;
-
+console.log('blub');
 /**
  * Created by jesseeikema on 11/5/15.
  */

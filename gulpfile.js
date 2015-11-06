@@ -20,6 +20,7 @@ var buffer = require('vinyl-buffer');
 var source = require('vinyl-source-stream');
 var gutil = require('gulp-util');
 var assign = require('lodash.assign');
+var gulpif = require('gulp-if');
 var b = browserify();
 
 var paths = {
@@ -38,21 +39,21 @@ var browserifyOpts = {
 
 var opts = assign({}, watchify.args, browserifyOpts);
 
-    b = watchify(browserify(opts));
-
 gulp.task('build', function(cb) { runSequence('build:clean', 'build:all', cb); });
 gulp.task('build:clean', function (cb) { rimraf(paths.dist, cb); });
-gulp.task('build:all', ['build:html', 'build:css', 'build:js', 'browserifyTask', 'build:assets']);
+gulp.task('build:all', ['build:html', 'build:css', 'browserifyWatchTask', 'build:assets']);
+gulp.task('build:deploy', ['build:html', 'build:css', 'browserifyTask', 'build:assets']);
+
 gulp.task('build:assets', buildAssets);
 gulp.task('build:html', buildHtml);
 gulp.task('build:css', buildCss);
-gulp.task('build:js', buildJs);
-gulp.task('browserifyTask', browserifyTask);
+
+gulp.task('browserifyTask', browserifyTask(false));
+gulp.task('browserifyWatchTask', browserifyTask(true));
 gulp.task('build:compress', compressTask);
 gulp.task('serve', serveTask);
 gulp.task('watch', watchTask);
 
-b.on('update', buildJs);
 b.on('log', gutil.log);
 
 function buildHtml() {
@@ -73,23 +74,21 @@ function buildCss() {
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(paths.distAssets));
 }
-
-function buildJs() {
-    return gulp.src([
-        'src/views/**/*.js'
-    ])
-        .pipe(concat('bundle.js'))
-        .pipe(gulp.dest(paths.srcAssets));
-}
-function browserifyTask (){
-    return b.bundle()
-        .on('error', gutil.log.bind(gutil, 'Browserify Error'))
-        .pipe(source('bundle.js'))
-        .pipe(buffer())
-        .pipe(uglify())
-        .pipe(sourcemaps.init({loadMaps: true}))
-        .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest(paths.dist));
+function browserifyTask (watch){
+    return function () {
+        if(watch){
+            b = watchify(browserify(opts));
+            b.on('update', browserifyTask(false));
+        }
+        return b.bundle()
+            .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+            .pipe(source('bundle.js'))
+            .pipe(buffer())
+            .pipe(sourcemaps.init({loadMaps: true}))
+            .pipe(uglify())
+            .pipe(sourcemaps.write('./'))
+            .pipe(gulp.dest(paths.dist));
+    }
 }
 
 function buildAssets() {
@@ -109,8 +108,8 @@ function compressTask(){
 
 function watchTask() {
     gulp.watch([paths.srcViews + '**/_*.html'], ['build:html']);
-    gulp.watch([paths.srcViews + '**/*.js'], ['build:js']);
     gulp.watch([paths.srcViews + '**/*.less'], ['build:css']);
+    browserifyTask(true)();
 }
 
 function serveTask() {

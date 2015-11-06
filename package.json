@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "gulp serve",
-    "build": "gulp build",
     "watch": "parallelshell 'gulp build' 'gulp watch'",
+    "build": "gulp build",
+    "deploy": "gulp build:deploy",
     "compress": "gulp build:compress"
   },
   "author": "De Voorhoede",
@@ -20,6 +21,7 @@
     "gulp-concat": "^2.6.0",
     "gulp-debug": "^2.1.2",
     "gulp-gzip": "^1.2.0",
+    "gulp-if": "^2.0.0",
     "gulp-less": "^3.0.3",
     "gulp-minify-css": "^1.2.1",
     "gulp-nunjucks-render": "^0.2.1",
