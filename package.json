@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "parallelshell 'gulp serve' 'gulp build'",
-    "watch": "gulp watch",
+    "start": "gulp serve ",
+    "watch": "parallelshell 'gulp build' 'gulp watch'",
     "compress": "gulp build:compress"
   },
   "author": "De Voorhoede",
@@ -26,12 +26,15 @@
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-uglify": "^1.4.2",
+    "gulp-util": "^3.0.7",
     "gulp-zip": "^3.0.2",
-    "jquery": "^2.1.4",
+    "lodash.assign": "^3.2.0",
     "merge-stream": "^1.0.0",
     "parallelshell": "latest",
     "rimraf": "^2.4.3",
     "run-sequence": "^1.1.2",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.6.0"
   }
 }

@@ -16,6 +16,10 @@ var changed = require('gulp-changed');
 var browserify = require('browserify');
 var watchify = require('watchify');
 var autoprefix = require('gulp-autoprefixer');
+var buffer = require('vinyl-buffer');
+var source = require('vinyl-source-stream');
+var gutil = require('gulp-util');
+var assign = require('lodash.assign');
 var b = browserify();
 
 var paths = {
@@ -27,18 +31,29 @@ var paths = {
     build:'build/'
 };
 
+var browserifyOpts = {
+    entries: ['src/assets/bundle.js'],
+    debug: true
+};
+
+var opts = assign({}, watchify.args, browserifyOpts);
+
+    b = watchify(browserify(opts));
+
 gulp.task('build', function(cb) { runSequence('build:clean', 'build:all', cb); });
 gulp.task('build:clean', function (cb) { rimraf(paths.dist, cb); });
-gulp.task('build:all', ['build:html', 'build:css', 'build:js', 'build:assets']);
+gulp.task('build:all', ['build:html', 'build:css', 'build:js', 'browserifyTask', 'build:assets']);
 gulp.task('build:assets', buildAssets);
 gulp.task('build:html', buildHtml);
 gulp.task('build:css', buildCss);
 gulp.task('build:js', buildJs);
+gulp.task('browserifyTask', browserifyTask);
 gulp.task('build:compress', compressTask);
 gulp.task('serve', serveTask);
 gulp.task('watch', watchTask);
 
-//browserify watchify
+b.on('update', buildJs);
+b.on('log', gutil.log);
 
 function buildHtml() {
     nunjucksRender.nunjucks.configure([paths.src], { watch: false });
@@ -60,14 +75,21 @@ function buildCss() {
 }
 
 function buildJs() {
-    return gulp.src([paths.srcViews + '**/*.js'])
-        .pipe(changed('main', {extension: 'js'}))
-        .pipe(sourcemaps.init({loadMaps: true}))
+    return gulp.src([
+        'src/views/**/*.js'
+    ])
+        .pipe(concat('bundle.js'))
+        .pipe(gulp.dest(paths.srcAssets));
+}
+function browserifyTask (){
+    return b.bundle()
+        .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+        .pipe(source('bundle.js'))
+        .pipe(buffer())
         .pipe(uglify())
-        .pipe(concat('main.min.js'))
+        .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest(paths.srcAssets))
-        .pipe(gulp.dest(paths.distAssets));
+        .pipe(gulp.dest(paths.dist));
 }
 
 function buildAssets() {
@@ -86,7 +108,7 @@ function compressTask(){
 }
 
 function watchTask() {
-    gulp.watch([paths.src + '*.html'], ['build:html']);
+    gulp.watch([paths.srcViews + '**/_*.html'], ['build:html']);
     gulp.watch([paths.srcViews + '**/*.js'], ['build:js']);
     gulp.watch([paths.srcViews + '**/*.less'], ['build:css']);
 }
